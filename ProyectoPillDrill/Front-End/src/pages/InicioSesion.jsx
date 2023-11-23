@@ -97,6 +97,10 @@ const InicioSesion = () => {
           </div>
        
       </form>
+      <button className={style.IR} onClick={() => {router.push('http://localhost:5000/google')}}>
+        INICIA SESION CON GOOGLE
+      </button>
+
     </div>
   );
 };

@@ -8,9 +8,15 @@ const mysql = require('mysql2');
 require('dotenv').config();
 const util = require('util');
 const credentials = require('./credential.json'); 
+const axios = require ('axios');
+const { Console } = require('console');
 
+const calendar = google.calendar({
+  version: "v3", 
+  auth: process.env.API_KEY,
+})
 
-const connection = mysql.createConnection(process.env.DATABASE_URL='mysql://qj1xrh8tadyku411khv1:pscale_pw_Dj5vzKVwBnwnBwqY36udJbzaZ6wy8LVHCUorBW8EoAq@aws.connect.psdb.cloud/proyecto?ssl={"rejectUnauthorized":true}');
+const connection = mysql.createConnection(process.env.DATABASE_URL='mysql://cgylubuc12ujtu10lula:pscale_pw_mvpePdfkakpoEVMjAF9kPmQ5faKlDkVBjox5dxVLrbZ@aws.connect.psdb.cloud/proyecto?ssl={"rejectUnauthorized":true}');
 connection.connect((err) => {
   if (err) {
     console.error('Error al conectarse a la base de datos:', err);
@@ -20,11 +26,81 @@ connection.connect((err) => {
 });
 
 
+
 const app = express();
 app.use(express.json());
 app.use(cors({
   origin: '*'
 }));
+
+//sETUP
+
+const oauth2Client = new google.auth.OAuth2(
+  process.env.CLIENT_ID,
+  process.env.CLIENT_SECRET,
+  process.env.REDIRECT_URL,
+  process.env.API_KEY
+
+)
+const scopes =[
+  'https://www.googleapis.com/auth/calendar'
+];
+
+app.get('/google', (req, res) =>{
+  const url = oauth2Client.generateAuthUrl({
+    access_type: "offline", 
+    scope : scopes
+  })
+
+  res.redirect(url);
+});
+
+//revisar aca la url no me lleva a ningun lado 
+app.get('/compartimento', async (req, res)=>{
+ res.send("holaaa")
+ const code = req.query.code;
+
+ const {tokens} = await oauth2Client.getAccessToken(code);
+ oauth2Client.setCredentials(tokens);
+ res.send({
+  msg: "logged in"
+ })
+ console.log("hola")
+ 
+
+});
+
+//Cambiar con las variables de la bas de datp
+app.get('/schedule_event', async (req, res)=>{
+
+  /*
+
+  console.log(oauth2Client.credentials.access_token);
+  
+  await calendar.events.insert({
+  calendarId: "primary", 
+  auth: oauth2Client,
+
+  requestBody:{
+    summary: "This is a test event", 
+     description: "cambiar por valores ", 
+     start:{
+      dateTime: "",
+      timeZone : "America/Argentina"
+     }, 
+     end:{
+      dateTime: "",
+      timeZone : "America/Argentina"
+     }
+  }
+ })
+
+ res.send({
+  msg: "listooo"
+ })
+ */
+})
+
 
 app.get("/status", (req, res) => {
   connection.query('SELECT * FROM boton_prendiendo LIMIT 1', (err, results) => {
@@ -161,42 +237,44 @@ app.get("/compartimento4", (req, res) => {
   })
 });
 app.post("/compartimento1informacion", async (req, res) => {
+  const { nombre, horario, fechainicio } = req.body;
+  const partesFecha = fechainicio.split('/');
+  const fechaFormateada = `${partesFecha[2]}-${partesFecha[1]}-${partesFecha[0]}`;
+  const updateQuery = 'UPDATE pastilla SET nombre = ?, hora = ?, fecha = ? WHERE envase = 1';
+
+  const query = util.promisify(connection.query).bind(connection);
+  const result = await query(updateQuery, [nombre, horario, fechaFormateada]);
+  
+  console.log('Actualización exitosa. Filas afectadas:', result.affectedRows);
   try {
-    const { nombre, horario, fechainicio } = req.body;
-    const updateQuery = 'UPDATE pastilla SET nombre = ?, hora = ?, fecha = ? WHERE envase = 1';
-
-    const query = util.promisify(connection.query).bind(connection);
-    const result = await query(updateQuery, [nombre, horario, fechainicio]);
+    console.log(oauth2Client.credentials.access_token);
+  
+    await calendar.events.insert({
+    calendarId: "primary", 
+    auth: oauth2Client,
     
-    console.log('Actualización exitosa. Filas afectadas:', result.affectedRows);
+  resource:{
+    
+    summary: nombre,
+     description: "holaaa ", 
+     start:{
+      dateTime: fechainicio + 'T' + horario,
+      timeZone: 'America/Argentina/Buenos_Aires',
+     }, 
+     end:{
+      dateTime: fechainicio + 'T' + horario,
+      timeZone: 'America/Argentina/Buenos_Aires',
 
-    // Crear evento en Google Calendar después de guardar en la base de datos
-    const auth = new google.auth.GoogleAuth({
-      credentials,
-      scopes: ['https://www.googleapis.com/auth/calendar'],
-    });
+     }
+  }
+ })
 
-    const calendar = google.calendar({ version: 'v3', auth });
-
-    const event = {
-      summary: nombre,
-      start: {
-        dateTime: fechainicio + 'T' + horario,
-        timeZone: 'America/Argentina/Buenos_Aires',
-      },
-      end: {
-        dateTime: fechainicio + 'T' + horario,
-        timeZone: 'America/Argentina/Buenos_Aires',
-      },
-    };
+ res.send({
+  msg: "listooo"
+ })
 
     console.log('Creating Google Calendar event');
-    
-    const response = await calendar.events.insert({
-      calendarId: 'primary',
-      resource: event,
-    });
-    
+ 
     console.log('Response from Google Calendar:', response); // Agregamos este log para imprimir la respuesta obtenida
     
     if (response && response.data) {

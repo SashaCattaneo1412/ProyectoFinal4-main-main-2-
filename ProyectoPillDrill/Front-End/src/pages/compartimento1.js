@@ -1,4 +1,4 @@
-import React, { UseState, UseRef } from 'react';
+import React, { useState, useRef } from 'react';
 import CenteredContainer from '../components/CenteredContainer';
 import style from '../styles/compartimiento1.module.css';
 import Image from 'next/image'
@@ -7,14 +7,34 @@ import Dropdown from '../components/dropdown';
 
 import Header from '../components/Header.jsx';
 
-const compartimiento1 = () => {
+const Compartimiento1 = () => {
 
-  const form = UseRef();
-  const [nombre, setNombre] = UseState("");
-  const [horario, setHorario] = UseState("");
-  const [dia, setDias] = UseState("");
-  const [todoslosdias, setTodosLosDias] = UseState("");
-  const [fechainicio, setFechaInicio] = UseState("");
+  const form = useRef();
+  const [nombre, setNombre] = useState("");
+  const [horario, setHorario] = useState("");
+  const [dia, setDias] = useState("");
+  const [todoslosdias, setTodosLosDias] = useState("");
+  const [fechainicio, setFechaInicio] = useState("");
+
+
+  const Hardware = async (e) => {
+    try {
+      const response = await fetch('http://localhost:5000/on1', {
+        
+      });
+
+      if (response.ok) {
+        console.log('SE ABRE');
+        router.push('/compartimento');
+
+      } else {
+        console.error('Error al guardar pastilla');
+      }
+    } catch (error) {
+      console.error('Error en la solicitud:', error);
+    }
+  };
+
 
   const Guardar = async (e) => {
     try {
@@ -88,6 +108,10 @@ const compartimiento1 = () => {
             <div className={style.contenidoEncima}>Guardar</div>
           </button>
 
+          <button className={style.BTN} onClick={(e) => Hardware(e)}>
+            <div className={style.contenidoEncima}>Abrir</div>
+          </button>
+
         </form>
       </CenteredContainer>
 
@@ -96,4 +120,4 @@ const compartimiento1 = () => {
 }
 
 
-export default compartimiento1
+export default Compartimiento1

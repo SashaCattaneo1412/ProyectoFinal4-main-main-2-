@@ -7,7 +7,18 @@ import Button from '../components/Buttons';
 
 
 const Pastilla1 = () => {
-    const dispensarP = () => {fetch('http://localhost:5000/on')};
+    const comp1 = () => {fetch('http://localhost:5000/on1')};{
+
+    }
+    const comp2 = () => {fetch('http://localhost:5000/on2')};{
+
+    }
+    const comp3 = () => {fetch('http://localhost:5000/on3')};{
+
+    }
+    const comp4 = () => {fetch('http://localhost:5000/on4')};{
+        
+    }
 
     return (
         <div>

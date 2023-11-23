@@ -1,17 +1,18 @@
-import React, { UseState, UseRef } from 'react';
+import React, { useState, useRef } from 'react';
 import CenteredContainer from '../components/CenteredContainer';
 import style from '../styles/compartimiento1.module.css';
 import Image from 'next/image'
 import Link from 'next/link';
 import Dropdown from '../components/dropdown';
 import Header from '../components/Header.jsx';
-const compartimiento4 = () => {
-  const form = UseRef();
-  const [nombre, setNombre] = UseState("");
-  const [horario, setHorario] = UseState("");
-  const [dia, setDias] = UseState("");
-  const [todoslosdias, setTodosLosDias] = UseState("");
-  const [fechainicio, setFechaInicio] = UseState("");
+
+const Compartimiento4 = () => {
+  const form = useRef();
+  const [nombre, setNombre] = useState("");
+  const [horario, setHorario] = useState("");
+  const [dia, setDias] = useState("");
+  const [todoslosdias, setTodosLosDias] = useState("");
+  const [fechainicio, setFechaInicio] = useState("");
 
   const Guardar = async (e) => {
     try {
@@ -26,7 +27,7 @@ const compartimiento4 = () => {
       if (response.ok) {
         // La solicitud fue exitosa, puedes realizar alguna acción aquí si es necesario.
         console.log('pastilla guardada');
-        router.push('/compartimento');
+        router.push('/Compartimento');
       } else {
         // La solicitud falló, manejar el error aquí si es necesario.
         console.error('Error al guardar pastilla');
@@ -86,4 +87,4 @@ const compartimiento4 = () => {
   )
 }
 
-export default compartimiento4
+export default Compartimiento4
