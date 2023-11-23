@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { UseState, UseRef } from 'react';
 import CenteredContainer from '../components/CenteredContainer';
 import style from '../styles/compartimiento1.module.css';
 import Image from 'next/image'
@@ -9,12 +9,12 @@ import Header from '../components/Header.jsx';
 
 const compartimiento1 = () => {
 
-  const form = useRef();
-  const [nombre, setNombre] = useState("");
-  const [horario, setHorario] = useState("");
-  const [dia, setDias] = useState("");
-  const [todoslosdias, setTodosLosDias] = useState("");
-  const [fechainicio, setFechaInicio] = useState("");
+  const form = UseRef();
+  const [nombre, setNombre] = UseState("");
+  const [horario, setHorario] = UseState("");
+  const [dia, setDias] = UseState("");
+  const [todoslosdias, setTodosLosDias] = UseState("");
+  const [fechainicio, setFechaInicio] = UseState("");
 
   const Guardar = async (e) => {
     try {
